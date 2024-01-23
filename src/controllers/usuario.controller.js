@@ -89,7 +89,7 @@ const registro = async (req,res)=>{
   //Queremos que en el token se guarde su id
   //el segundo parametro es para guardar la llave secreta
   //el tercero cuando expirara
-  jwt.sign({id:usuarioGuardado._id},"secret123",{expiresIn:"365d"},(error,token)=>{
+  jwt.sign({id:usuarioGuardado._id},"secret123",{expiresIn:null},(error,token)=>{
       if(error) throw error
       res.cookie("token",token)
       res.send('Usuario Creado')

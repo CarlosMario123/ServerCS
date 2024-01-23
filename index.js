@@ -8,7 +8,8 @@ const { Server: SocketServer } = require("socket.io");
 const cors = require("cors");
 const conectarDB = require("./src/db/db")
 const conectarSocket = require("./socket/webSocket")
-
+const ChatController = require("./socket/controller/chatController")
+const authenticateSocket = require("./src/middlewares/authSocket")
 
 let clientesConectados= [];
 
@@ -22,7 +23,7 @@ const io = new SocketServer(server, {
     origin: "*",
   },
 });
-
+//io.use(authenticateSocket);//io nos servira auntenticar que solo envie los autenticados
 app.use(cors());
 app.use(express.json());
 
@@ -69,8 +70,17 @@ app.get('/conexion', (req, res) => {
   });
 });
 
+//Aca establecemos conexion con socket io
+const chatController = new ChatController(io);//contraador para el chat
+io.on("connection", (socket) => {
+  console.log(`Usuario conectado: ${socket.id}`);
+  chatController.handleConnection(socket);
+  
+});
+
 server.listen(port,()=>{
   console.log(`Escuchando en el servidor ${port}`);
 })
+
 
 conectarSocket()//aca manejamos la conexion websocket
