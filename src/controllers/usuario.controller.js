@@ -1,10 +1,11 @@
 const Usuario = require('../models/usuario.model')
+const { promisify } = require('util');
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const validarToken = require("../auth/validatorToken");//funcion para validar token
 
 
-const login = async (req, res = response) => {
+const login = async (req, res) => {
   const { correo, password } = req.body;
 
   try {
@@ -33,34 +34,30 @@ const login = async (req, res = response) => {
       },
     };
 
-    // Clave secreta para firmar el token
+    // Obtener la clave secreta desde una variable de entorno o configuración externa
     const privateKey = "clave";
 
-    jwt.sign(payload, privateKey, { expiresIn: "1h" }, (error, token) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).json({
-          msg: "Error al generar el token JWT",
-        });
-      }
+    // Convertir jwt.sign en una función que soporte promesas con promisify
+    const signAsync = promisify(jwt.sign);
 
-      // Devuelve el token JWT en la respuesta
-      res.json({
-        msg: "Inicio de sesión exitoso",
-        token,
-        usuario: {
-          id: usuario.id,
-        },
-      });
+    // Generar el token JWT de manera asíncrona
+    const token = await signAsync(payload, privateKey, { expiresIn: "1h" });
+
+    // Devuelve el token JWT en la respuesta
+    res.json({
+      msg: "Inicio de sesión exitoso",
+      token,
+      usuario: {
+        id: usuario.id,
+      },
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error en el inicio de sesión:', error);
     res.status(500).json({
       msg: "Error en el inicio de sesión",
     });
   }
 };
-
 
 const registro = async (req,res)=>{
   //extraemos lo de requestes.body

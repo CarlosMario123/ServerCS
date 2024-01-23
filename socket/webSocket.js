@@ -1,26 +1,33 @@
 const WebSocket = require("ws");
 const validadorToken = require("../src/auth/validatorToken");
 const controllerChat = require("./chat/controlador");
-const wss = new WebSocket.Server({ port: 4000 });
-//crearemos una funcion que sera el corazon de nuestro websocket
+const wss = new WebSocket.Server({ port: 3000 });
 
 function conectarSocket() {
   wss.on("connection", (cliente, request) => {
-    const token = request.headers["sec-websocket-protocol"]; //para validar los tokens
-    console.log(token)
-    if (!validadorToken(token)) {
-      // Si no hay token o no es valido , cerrar la conexión
-      console.log("Intento de conexión sin token. Cerrando conexión.");
-      cliente.close();
-      return;
-    }
-    console.log("cliente accedio al chat");
+    console.log("usuario conectado al websocket")
+    const token = request.headers["sec-websocket-protocol"];
 
     cliente.on("message", (message) => {
-      //manejar los mensaje que envie un cliente
-    
-      controllerChat(wss, message, cliente); //permite controlar el envio de chat
+      controllerChat(wss, message, cliente);
     });
+
+    cliente.on("close", (code, reason) => {
+      console.log(`Cliente desconectado. Código: ${code}, Razón: ${reason}`);
+    });
+  });
+
+  wss.on("error", (error) => {
+    console.error("Error en el servidor WebSocket:", error);
+  });
+
+
+  wss.on("close", () => {
+    console.log("Servidor WebSocket cerrado");
+  });
+
+  wss.on("open", () => {
+    console.log("Conexión WebSocket establecida");
   });
 }
 

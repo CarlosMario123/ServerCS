@@ -16,12 +16,14 @@ let clientesConectados= [];
 conectarDB()//conexion a mi base de datos
 
 const app = express();
-const port = 3000;
+const port = 8000;
 const server = http.createServer(app);
 const io = new SocketServer(server, {
   cors: {
     origin: "*",
   },
+  pingInterval: 1000,
+  pingTimeout: 2000
 });
 //io.use(authenticateSocket);//io nos servira auntenticar que solo envie los autenticados
 app.use(cors());
