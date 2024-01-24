@@ -77,6 +77,7 @@ const chatController = new ChatController(io);//contraador para el chat
 io.on("connection", (socket) => {
   console.log(`Usuario conectado: ${socket.id}`);
   chatController.handleConnection(socket);
+
   
 });
 

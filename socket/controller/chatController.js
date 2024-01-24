@@ -6,12 +6,18 @@ class ChatController {
   
     handleConnection(socket) {
        
-      socket.on("chat:join", (room) => this.joinRoom(socket, room));
-      socket.on("chat:leave", (room) => this.leaveRoom(socket, room));
-      socket.on("chat:send", (data) => this.sendMessage(socket, data));
+      socket.on("chat:join", (room) => {
+        this.joinRoom(socket, room)
+      });
+      socket.on("chat:leave", (room) => {
+        this.leaveRoom(socket, room)
+      } );
+      socket.on("chat:send", (data) => {
+        this.sendMessage(socket, data);
+      })
       
       socket.on("disconnect", () => {
-        console.log(`Usuario desconectado: ${socket.id}`);
+        console.log(`Usuario desconectadokljkljkljkljkljkl: ${socket.id}`);
       });
     }
   
