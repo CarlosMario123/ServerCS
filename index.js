@@ -12,8 +12,6 @@ const conectarSocket = require("./socket/webSocket")
 const usuarioRoute = require('./src/routes/usuario.routes');
 const pizarraRouter = require("./src/routes/pizarraRoute")
 
-const authenticateSocket = require("./src/middlewares/authSocket")
-
 async function iniciar(){
   await conectarDB()//conexion a mi base de datos
   let clientesConectados= [];
@@ -25,7 +23,7 @@ const server = http.createServer(app);
 const io =  socketio(server,{
    cors:"*"
 })
-//io.use(authenticateSocket);//io nos servira auntenticar que solo envie los autenticados
+
 
 //Aca establecemos conexion con socket io
 try {

@@ -1,7 +1,9 @@
+const authSocket = require("../../src/middlewares/authSocket")
 class ChatController {
 
     constructor(io) {
       this.io = io;
+      io.use(authSocket)
       this.handleConnection();
     }
   

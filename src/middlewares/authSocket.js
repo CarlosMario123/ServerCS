@@ -1,23 +1,20 @@
 const jwt = require('jsonwebtoken');
 const secretJWT = "clave";
 
-const authenticateSocket= (socket, next) => {
+const authenticateSocket = (socket, next) => {
     try {
-        const token = socket.handshake.auth.token;
-        
-        jwt.verify(token, secretJWT, (err, decode) => {
-            if (err) {
-                next(err);
-            }
+    console.log("entro")
+        const token = socket.handshake.query.token;
+        jwt.verify(token, secretJWT, (err, decoded) => {
+         
+                console.log("sin error de auth");
+                next();
 
-            socket.user = decode;
-            console.log("sin error de auth")
-            next();
         });
-    } catch (error) { 
-        console.log("con error de auth") 
+    } catch (error) {
+        console.log("con error de auth");
         next(error);
     }
 }
 
-module.exports = authenticateSocket
+module.exports = authenticateSocket;
