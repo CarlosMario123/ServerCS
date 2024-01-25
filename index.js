@@ -4,33 +4,39 @@
 //Websocket chat alumnos 
 const express = require("express");
 const http = require("http");
-const { Server: SocketServer } = require("socket.io");
+const  socketio = require("socket.io");
 const cors = require("cors");
+const ChatController = require("./socket/controller/chatController")
 const conectarDB = require("./src/db/db")
 const conectarSocket = require("./socket/webSocket")
-const ChatController = require("./socket/controller/chatController")
+const usuarioRoute = require('./src/routes/usuario.routes');
+const pizarraRouter = require("./src/routes/pizarraRoute")
+
 const authenticateSocket = require("./src/middlewares/authSocket")
 
-let clientesConectados= [];
+async function iniciar(){
+  await conectarDB()//conexion a mi base de datos
+  let clientesConectados= [];
 
-conectarDB()//conexion a mi base de datos
 
 const app = express();
 const port = 8000;
 const server = http.createServer(app);
-const io = new SocketServer(server, {
-  cors: {
-    origin: "*",
-  },
-  pingInterval: 1000,
-  pingTimeout: 2000
-});
+const io =  socketio(server,{
+   cors:"*"
+})
 //io.use(authenticateSocket);//io nos servira auntenticar que solo envie los autenticados
+
+//Aca establecemos conexion con socket io
+try {
+  const chat = new ChatController(io);
+} catch (error) {
+  console.error("Error durante la creación de la instancia de ChatController:", error);
+}
 app.use(cors());
 app.use(express.json());
 
-const usuarioRoute = require('./src/routes/usuario.routes');
-const pizarraRouter = require("./src/routes/pizarraRoute")
+
 
 app.use('/usuario', usuarioRoute);
 app.use("/pizarra",pizarraRouter);
@@ -72,14 +78,7 @@ app.get('/conexion', (req, res) => {
   });
 });
 
-//Aca establecemos conexion con socket io
-const chatController = new ChatController(io);//contraador para el chat
-io.on("connection", (socket) => {
-  console.log(`Usuario conectado: ${socket.id}`);
-  chatController.handleConnection(socket);
 
-  
-});
 
 server.listen(port,()=>{
   console.log(`Escuchando en el servidor ${port}`);
@@ -87,3 +86,6 @@ server.listen(port,()=>{
 
 
 conectarSocket()//aca manejamos la conexion websocket
+}
+
+iniciar()

@@ -1,4 +1,3 @@
-/* Importamos mongoose que nos permitirá conectarnos a la base de datos de MongoDB y crear esquemas, entre otras funcionalidades */
 const mongoose = require("mongoose");
 
 async function conectarDB() {
@@ -9,9 +8,9 @@ async function conectarDB() {
         });
         console.log("Conexión exitosa a la base de datos");
     } catch (error) {
-        console.log("Hubo un error al conectar la base de datos");
-        console.error(error);
+        console.error("Hubo un error al conectar la base de datos");
+        throw error; // Propaga el error para manejarlo desde el llamador
     }
 }
 
-module.exports = conectarDB;
+module.exports = conectarDB
